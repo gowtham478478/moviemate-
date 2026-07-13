@@ -11,7 +11,7 @@ pipeline {
         stage('Build Backend Image') {
             steps {
                 dir('backend') {
-                    bat 'docker build -t moviemate-backend .'
+                    sh 'docker build -t moviemate-backend .'
                 }
             }
         }
@@ -19,7 +19,7 @@ pipeline {
         stage('Build Frontend Image') {
             steps {
                 dir('frontend') {
-                    bat 'docker build -t moviemate-frontend .'
+                    sh 'docker build -t moviemate-frontend .'
                 }
             }
         }
