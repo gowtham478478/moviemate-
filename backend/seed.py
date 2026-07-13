@@ -1,0 +1,85 @@
+from app import app
+from models.models import db, Movie
+
+sample_movies = [
+    {"title": "Inception", "genre": "Sci-Fi", "description": "A thief who steals corporate secrets through dream-sharing technology.", "poster_url": "https://via.placeholder.com/300x450?text=Inception", "release_year": 2010},
+    {"title": "The Dark Knight", "genre": "Action", "description": "Batman faces the Joker, a criminal mastermind who wants to plunge Gotham into anarchy.", "poster_url": "https://via.placeholder.com/300x450?text=Dark+Knight", "release_year": 2008},
+    {"title": "Interstellar", "genre": "Sci-Fi", "description": "A team of explorers travel through a wormhole in space to ensure humanity's survival.", "poster_url": "https://via.placeholder.com/300x450?text=Interstellar", "release_year": 2014},
+    {"title": "The Shawshank Redemption", "genre": "Drama", "description": "Two imprisoned men bond over years, finding solace and redemption.", "poster_url": "https://via.placeholder.com/300x450?text=Shawshank", "release_year": 1994},
+    {"title": "Pulp Fiction", "genre": "Crime", "description": "The lives of two mob hitmen, a boxer, and others intertwine in tales of violence.", "poster_url": "https://via.placeholder.com/300x450?text=Pulp+Fiction", "release_year": 1994},
+    {"title": "Forrest Gump", "genre": "Drama", "description": "The presidencies of Kennedy and Johnson unfold through the perspective of an Alabama man.", "poster_url": "https://via.placeholder.com/300x450?text=Forrest+Gump", "release_year": 1994},
+    {"title": "The Matrix", "genre": "Sci-Fi", "description": "A computer hacker learns about the true nature of his reality.", "poster_url": "https://via.placeholder.com/300x450?text=The+Matrix", "release_year": 1999},
+    {"title": "Titanic", "genre": "Romance", "description": "A seventeen-year-old aristocrat falls in love with a poor artist aboard the Titanic.", "poster_url": "https://via.placeholder.com/300x450?text=Titanic", "release_year": 1997},
+    {"title": "Avengers: Endgame", "genre": "Action", "description": "The Avengers assemble once more to reverse Thanos' actions.", "poster_url": "https://via.placeholder.com/300x450?text=Endgame", "release_year": 2019},
+    {"title": "Joker", "genre": "Drama", "description": "A failed comedian descends into madness and becomes an icon of chaos.", "poster_url": "https://via.placeholder.com/300x450?text=Joker", "release_year": 2019},
+    {"title": "Parasite", "genre": "Thriller", "description": "Greed and class discrimination threaten the newfound relationship between two families.", "poster_url": "https://via.placeholder.com/300x450?text=Parasite", "release_year": 2019},
+    {"title": "Gladiator", "genre": "Action", "description": "A former Roman general seeks revenge against the corrupt emperor who murdered his family.", "poster_url": "https://via.placeholder.com/300x450?text=Gladiator", "release_year": 2000},
+    {"title": "The Lion King", "genre": "Animation", "description": "A young lion prince flees his kingdom after his father's death.", "poster_url": "https://via.placeholder.com/300x450?text=Lion+King", "release_year": 1994},
+    {"title": "Whiplash", "genre": "Drama", "description": "A young drummer enrolls at a music conservatory led by an abusive instructor.", "poster_url": "https://via.placeholder.com/300x450?text=Whiplash", "release_year": 2014},
+    {"title": "Get Out", "genre": "Horror", "description": "A young African-American visits his white girlfriend's family estate.", "poster_url": "https://via.placeholder.com/300x450?text=Get+Out", "release_year": 2017},
+    {"title": "Toy Story", "genre": "Animation", "description": "A cowboy doll feels threatened when a new spaceman toy replaces him as a boy's favorite.", "poster_url": "https://via.placeholder.com/300x450?text=Toy+Story", "release_year": 1995},
+    {"title": "Finding Nemo", "genre": "Animation", "description": "A clownfish father searches the ocean for his missing son.", "poster_url": "https://via.placeholder.com/300x450?text=Finding+Nemo", "release_year": 2003},
+    {"title": "Shrek", "genre": "Animation", "description": "An ogre agrees to rescue a princess to reclaim his swamp from a scheming lord.", "poster_url": "https://via.placeholder.com/300x450?text=Shrek", "release_year": 2001},
+    {"title": "Up", "genre": "Animation", "description": "An old man ties balloons to his house to fly to South America with a young stowaway.", "poster_url": "https://via.placeholder.com/300x450?text=Up", "release_year": 2009},
+    {"title": "Zootopia", "genre": "Animation", "description": "A rookie rabbit officer and a con artist fox uncover a conspiracy in a city of mammals.", "poster_url": "https://via.placeholder.com/300x450?text=Zootopia", "release_year": 2016},
+    {"title": "Coco", "genre": "Animation", "description": "A boy is transported to the Land of the Dead to uncover his family's history.", "poster_url": "https://via.placeholder.com/300x450?text=Coco", "release_year": 2017},
+    {"title": "Frozen", "genre": "Animation", "description": "A princess sets off to find her estranged sister whose icy powers have trapped their kingdom.", "poster_url": "https://via.placeholder.com/300x450?text=Frozen", "release_year": 2013},
+    {"title": "Spider-Man: Into the Spider-Verse", "genre": "Animation", "description": "A teen becomes Spider-Man and joins others from parallel dimensions to stop a threat.", "poster_url": "https://via.placeholder.com/300x450?text=Spider-Verse", "release_year": 2018},
+    {"title": "How to Train Your Dragon", "genre": "Animation", "description": "A Viking teenager befriends a dragon and challenges his tribe's traditions.", "poster_url": "https://via.placeholder.com/300x450?text=Train+Dragon", "release_year": 2010},
+    {"title": "Kung Fu Panda", "genre": "Animation", "description": "A clumsy panda is chosen as the prophesied dragon warrior of a valley.", "poster_url": "https://via.placeholder.com/300x450?text=Kung+Fu+Panda", "release_year": 2008},
+    {"title": "The Incredibles", "genre": "Animation", "description": "A family of superheroes tries to live a quiet suburban life while facing a new villain.", "poster_url": "https://via.placeholder.com/300x450?text=Incredibles", "release_year": 2004},
+    {"title": "Moana", "genre": "Animation", "description": "A chief's daughter sails across the ocean to save her people with the help of a demigod.", "poster_url": "https://via.placeholder.com/300x450?text=Moana", "release_year": 2016},
+    {"title": "Ratatouille", "genre": "Animation", "description": "A rat who dreams of becoming a chef teams up with a young kitchen worker in Paris.", "poster_url": "https://via.placeholder.com/300x450?text=Ratatouille", "release_year": 2007},
+    {"title": "Wall-E", "genre": "Animation", "description": "A lonely robot tasked with cleaning a deserted Earth falls in love with a scout robot.", "poster_url": "https://via.placeholder.com/300x450?text=Wall-E", "release_year": 2008},
+    {"title": "Spirited Away", "genre": "Animation", "description": "A girl wanders into a world ruled by spirits and must work to free her parents.", "poster_url": "https://via.placeholder.com/300x450?text=Spirited+Away", "release_year": 2001},
+    {"title": "The Lego Movie", "genre": "Animation", "description": "An ordinary Lego figure is mistaken for a master builder destined to save the universe.", "poster_url": "https://via.placeholder.com/300x450?text=Lego+Movie", "release_year": 2014},
+    {"title": "Despicable Me", "genre": "Animation", "description": "A supervillain adopts three orphan girls as part of a scheme, but grows to love them.", "poster_url": "https://via.placeholder.com/300x450?text=Despicable+Me", "release_year": 2010},
+    {"title": "Big Hero 6", "genre": "Animation", "description": "A boy and his inflatable robot team up with friends to fight a masked villain.", "poster_url": "https://via.placeholder.com/300x450?text=Big+Hero+6", "release_year": 2014},
+    {"title": "Inside Out", "genre": "Animation", "description": "Emotions inside a young girl's mind guide her through a difficult family move.", "poster_url": "https://via.placeholder.com/300x450?text=Inside+Out", "release_year": 2015},
+    {"title": "Encanto", "genre": "Animation", "description": "A Colombian family with magical gifts discovers their magic is in danger.", "poster_url": "https://via.placeholder.com/300x450?text=Encanto", "release_year": 2021},
+    {"title": "The Avengers", "genre": "Action", "description": "Earth's mightiest heroes must unite to stop an alien invasion led by Loki.", "poster_url": "https://via.placeholder.com/300x450?text=The+Avengers", "release_year": 2012},
+    {"title": "Iron Man", "genre": "Action", "description": "A billionaire engineer builds a powered suit to fight evil.", "poster_url": "https://via.placeholder.com/300x450?text=Iron+Man", "release_year": 2008},
+    {"title": "Mad Max: Fury Road", "genre": "Action", "description": "A woman rebels against a tyrannical ruler in a post-apocalyptic wasteland.", "poster_url": "https://via.placeholder.com/300x450?text=Mad+Max", "release_year": 2015},
+    {"title": "John Wick", "genre": "Action", "description": "A retired hitman seeks vengeance against the gangsters who took everything from him.", "poster_url": "https://via.placeholder.com/300x450?text=John+Wick", "release_year": 2014},
+    {"title": "Die Hard", "genre": "Action", "description": "A New York cop fights terrorists who have taken over a Los Angeles skyscraper.", "poster_url": "https://via.placeholder.com/300x450?text=Die+Hard", "release_year": 1988},
+    {"title": "The Godfather", "genre": "Crime", "description": "The aging patriarch of an organized crime dynasty transfers control to his son.", "poster_url": "https://via.placeholder.com/300x450?text=Godfather", "release_year": 1972},
+    {"title": "Goodfellas", "genre": "Crime", "description": "The story of a mobster's rise and fall within the mafia over three decades.", "poster_url": "https://via.placeholder.com/300x450?text=Goodfellas", "release_year": 1990},
+    {"title": "Se7en", "genre": "Thriller", "description": "Two detectives hunt a serial killer who uses the seven deadly sins as his motives.", "poster_url": "https://via.placeholder.com/300x450?text=Se7en", "release_year": 1995},
+    {"title": "Fight Club", "genre": "Drama", "description": "An insomniac office worker forms an underground fight club with a soap salesman.", "poster_url": "https://via.placeholder.com/300x450?text=Fight+Club", "release_year": 1999},
+    {"title": "The Sixth Sense", "genre": "Thriller", "description": "A boy who communicates with spirits seeks the help of a child psychologist.", "poster_url": "https://via.placeholder.com/300x450?text=Sixth+Sense", "release_year": 1999},
+    {"title": "A Quiet Place", "genre": "Horror", "description": "A family must live in silence to avoid attracting creatures that hunt by sound.", "poster_url": "https://via.placeholder.com/300x450?text=Quiet+Place", "release_year": 2018},
+    {"title": "Hereditary", "genre": "Horror", "description": "A family unravels dark secrets after the death of their secretive grandmother.", "poster_url": "https://via.placeholder.com/300x450?text=Hereditary", "release_year": 2018},
+    {"title": "The Conjuring", "genre": "Horror", "description": "Paranormal investigators help a family terrorized by a dark presence in their farmhouse.", "poster_url": "https://via.placeholder.com/300x450?text=Conjuring", "release_year": 2013},
+    {"title": "La La Land", "genre": "Romance", "description": "A jazz musician and an actress pursue their dreams while falling in love in Los Angeles.", "poster_url": "https://via.placeholder.com/300x450?text=La+La+Land", "release_year": 2016},
+    {"title": "The Notebook", "genre": "Romance", "description": "A poor man and a rich woman fall deeply in love despite their families' disapproval.", "poster_url": "https://via.placeholder.com/300x450?text=The+Notebook", "release_year": 2004},
+    {"title": "Superbad", "genre": "Comedy", "description": "Two high school friends try to make the most of their final days before graduation.", "poster_url": "https://via.placeholder.com/300x450?text=Superbad", "release_year": 2007},
+    {"title": "The Hangover", "genre": "Comedy", "description": "Three friends wake up with no memory of the night before after a wild bachelor party.", "poster_url": "https://via.placeholder.com/300x450?text=The+Hangover", "release_year": 2009},
+    {"title": "Dune", "genre": "Sci-Fi", "description": "A young noble becomes central to the fate of a desert planet valued for its rare resource.", "poster_url": "https://via.placeholder.com/300x450?text=Dune", "release_year": 2021},
+    {"title": "Blade Runner 2049", "genre": "Sci-Fi", "description": "A young blade runner unearths a secret that could plunge society into chaos.", "poster_url": "https://via.placeholder.com/300x450?text=Blade+Runner+2049", "release_year": 2017},
+    {"title": "Arrival", "genre": "Sci-Fi", "description": "A linguist works to communicate with alien visitors before global tensions escalate.", "poster_url": "https://via.placeholder.com/300x450?text=Arrival", "release_year": 2016},
+    {"title": "Guardians of the Galaxy", "genre": "Action", "description": "A group of intergalactic misfits must band together to protect the galaxy.", "poster_url": "https://via.placeholder.com/300x450?text=Guardians", "release_year": 2014},
+    {"title": "Black Panther", "genre": "Action", "description": "The new king of Wakanda must protect his nation from a challenger from his past.", "poster_url": "https://via.placeholder.com/300x450?text=Black+Panther", "release_year": 2018},
+    {"title": "Oppenheimer", "genre": "Drama", "description": "The story of the physicist who led the development of the atomic bomb.", "poster_url": "https://via.placeholder.com/300x450?text=Oppenheimer", "release_year": 2023},
+    {"title": "Barbie", "genre": "Comedy", "description": "A doll living in a perfect world sets out to the real world after an existential crisis.", "poster_url": "https://via.placeholder.com/300x450?text=Barbie", "release_year": 2023},
+    {"title": "The Wolf of Wall Street", "genre": "Crime", "description": "A stockbroker's rise to wealth leads to corruption and excess on Wall Street.", "poster_url": "https://via.placeholder.com/300x450?text=Wolf+of+Wall+Street", "release_year": 2013},
+    {"title": "Django Unchained", "genre": "Action", "description": "A freed slave sets out to rescue his wife from a brutal plantation owner.", "poster_url": "https://via.placeholder.com/300x450?text=Django", "release_year": 2012},
+    {"title": "The Grand Budapest Hotel", "genre": "Comedy", "description": "A concierge and his protégé become embroiled in a theft and murder mystery.", "poster_url": "https://via.placeholder.com/300x450?text=Grand+Budapest", "release_year": 2014},
+    {"title": "Coraline", "genre": "Animation", "description": "A girl discovers an alternate version of her life through a secret door in her home.", "poster_url": "https://via.placeholder.com/300x450?text=Coraline", "release_year": 2009},
+    {"title": "My Neighbor Totoro", "genre": "Animation", "description": "Two sisters befriend gentle forest spirits while their mother recovers from illness.", "poster_url": "https://via.placeholder.com/300x450?text=Totoro", "release_year": 1988},
+    {"title": "Puss in Boots: The Last Wish", "genre": "Animation", "description": "A legendary cat sets out on a quest to find a wishing star and restore his nine lives.", "poster_url": "https://via.placeholder.com/300x450?text=Puss+in+Boots", "release_year": 2022},
+]
+
+with app.app_context():
+    db.create_all()
+    Movie.query.delete()
+    for m in sample_movies:
+        movie = Movie(
+            title=m["title"],
+            genre=m["genre"],
+            description=m["description"],
+            poster_url=m["poster_url"],
+            release_year=m["release_year"]
+        )
+        db.session.add(movie)
+    db.session.commit()
+    print(f"Successfully added {len(sample_movies)} movies to the database!")
