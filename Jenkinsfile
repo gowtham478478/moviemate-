@@ -36,12 +36,12 @@ pipeline {
 
         stage('Security Scan - Trivy') {
             steps {
-                sh '''
+                sh """
                     mkdir -p trivy-reports
-                    trivy image --severity HIGH,CRITICAL --exit-code 0 --format table --output trivy-reports/backend-report.txt moviemate-backend:latest || true
-                    trivy image --severity HIGH,CRITICAL --exit-code 0 --format table --output trivy-reports/frontend-report.txt moviemate-frontend:latest || true
+                    trivy image --severity HIGH,CRITICAL --exit-code 0 --format table --output trivy-reports/backend-report.txt ${BACKEND_IMAGE}:latest || true
+                    trivy image --severity HIGH,CRITICAL --exit-code 0 --format table --output trivy-reports/frontend-report.txt ${FRONTEND_IMAGE}:latest || true
                     echo "✅ Trivy scan completed"
-                '''
+                """
             }
             post {
                 always {
